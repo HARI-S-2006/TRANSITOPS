@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+  role     String // FleetManager, Dispatcher, SafetyOfficer, FinancialAnalyst
+}
+
+model Vehicle {
+  id       String @id @default(cuid())
+  regNo    String @unique
+  name     String
+  type     String // Van, Truck, Mini
+  capacity Float   // Maximum load capacity in kg
+  odometer Float  // Current odometer reading
+  acqCost  Float  // Acquisition cost
+  status   String // Available, OnTrip, InShop, Retired
+
+  trips       Trip[]
+  maintenance MaintenanceLog[]
+  fuelLogs    FuelLog[]
+}
+
+model Driver {
+  id            String   @id @default(cuid())
+  name          String
+  licenseNo     String   @unique
+  licenseExpiry DateTime
+  contact       String
+  safetyScore   Float
+  status        String   // Available, OnTrip, OffDuty, Suspended
+
+  trips         Trip[]
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  tripNumber  String   @unique
+  source      String
+  destination String
+  cargoWeight Float
+  distance    Float
+  status      String   // Draft, Dispatched, Completed, Cancelled
+  etaMinutes  Int?
+  
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  
+  driverId    String
+  driver      Driver   @relation(fields: [driverId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MaintenanceLog {
+  id          String   @id @default(cuid())
+  serviceType String
+  cost        Float
+  date        DateTime
+  status      String   // Active, Completed
+  
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FuelLog {
+  id        String   @id @default(cuid())
+  liters    Float
+  cost      Float
+  date      DateTime
+  
+  vehicleId String
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  
+  createdAt DateTime @default(now())
+}
