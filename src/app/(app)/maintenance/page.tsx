@@ -20,19 +20,19 @@ export default function MaintenancePage() {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Service Type</label>
-                <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg px-4 py-3 text-sm focus:outline-none" placeholder="e.g. Oil Change" type="text" value="Oil Change" />
+                <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg px-4 py-3 text-sm focus:outline-none" placeholder="e.g. Oil Change" type="text" defaultValue="Oil Change" />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Cost</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#111827]/50 font-bold">$</span>
-                  <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg pl-8 pr-4 py-3 text-sm focus:outline-none" placeholder="2500" type="number" value="2500" />
+                  <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg pl-8 pr-4 py-3 text-sm focus:outline-none" placeholder="2500" type="number" defaultValue="2500" />
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Date</label>
                 <div className="relative">
-                  <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg px-4 py-3 text-sm appearance-none focus:outline-none [&::-webkit-calendar-picker-indicator]:opacity-0" type="date" value="2026-07-07" />
+                  <input className="w-full bg-white text-[#111827] font-semibold border-none rounded-lg px-4 py-3 text-sm appearance-none focus:outline-none [&::-webkit-calendar-picker-indicator]:opacity-0" type="date" defaultValue="2026-07-07" />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#111827]/50 pointer-events-none text-[20px]">calendar_today</span>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'primary';
+type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'primary' | 'outline';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
@@ -14,6 +14,7 @@ export function Badge({ children, variant = 'default', className = '', ...props 
     success: 'bg-secondary/20 text-secondary border-secondary/50',
     warning: 'bg-tertiary/20 text-tertiary border-tertiary/50',
     danger: 'bg-error/20 text-error border-error/50',
+    outline: 'bg-transparent text-on-surface-variant border-outline-variant',
   };
 
   return (
