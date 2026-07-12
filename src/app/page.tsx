@@ -13,11 +13,13 @@ export default function Page() {
   // For the demo, changing the role fills in a demo user's email
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const r = e.target.value;
-    if (r === 'Dispatcher') setEmail('dispatcher@transitops.com');
-    if (r === 'FleetManager') setEmail('fleet@transitops.com');
-    if (r === 'SafetyOfficer') setEmail('safety@transitops.com');
-    if (r === 'FinancialAnalyst') setEmail('finance@transitops.com');
-    setPassword('password123'); // Default password for seeded users
+    if (r === 'Dispatcher') {
+      setEmail('sharinath2006@gmail.com');
+      setPassword('123456');
+    } else {
+      setEmail('admin@transitops.com');
+      setPassword('admin123');
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
