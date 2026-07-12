@@ -1,10 +1,17 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
 
   const getLinkClasses = (path: string) => {
     if (pathname === path) {
@@ -62,6 +69,13 @@ export default function Sidebar() {
             <span className="material-symbols-outlined" style={getIconStyle("/settings")}>settings</span>
             <span>Settings</span>
           </Link>
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-all duration-200 ease-out rounded-xl mt-2"
+          >
+            <span className="material-symbols-outlined">logout</span>
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </nav>
