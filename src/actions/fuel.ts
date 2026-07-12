@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/firebase'
 import { revalidatePath } from 'next/cache'
 
 export async function createFuelLog(data: {
@@ -10,13 +10,14 @@ export async function createFuelLog(data: {
   vehicleId: string
 }) {
   try {
-    const log = await prisma.fuelLog.create({
-      data,
-    })
+    if (!db) throw new Error('Database not initialized');
+
+    const docRef = await db.collection('fuelLogs').add(data)
+    
     revalidatePath('/fuel')
     revalidatePath('/dashboard')
     revalidatePath('/reports')
-    return { success: true, log }
+    return { success: true, log: { id: docRef.id, ...data } }
   } catch (error) {
     console.error('Error creating fuel log:', error)
     return { success: false, error: 'Failed to create fuel log' }

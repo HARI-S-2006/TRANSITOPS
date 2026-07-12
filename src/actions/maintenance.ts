@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/firebase'
 import { revalidatePath } from 'next/cache'
 
 export async function createMaintenanceLog(data: {
@@ -10,22 +10,24 @@ export async function createMaintenanceLog(data: {
   vehicleId: string
 }) {
   try {
-    const vehicle = await prisma.vehicle.findUnique({ where: { id: data.vehicleId } })
-    if (!vehicle) return { success: false, error: 'Vehicle not found' }
-    if (vehicle.status === 'OnTrip') return { success: false, error: 'Cannot service a vehicle currently on a trip' }
+    if (!db) throw new Error('Database not initialized');
+    
+    const vehicleRef = db.collection('vehicles').doc(data.vehicleId);
+    const vehicleDoc = await vehicleRef.get();
+    
+    if (!vehicleDoc.exists) return { success: false, error: 'Vehicle not found' }
+    if (vehicleDoc.data()?.status === 'OnTrip') return { success: false, error: 'Cannot service a vehicle currently on a trip' }
 
-    await prisma.$transaction([
-      prisma.maintenanceLog.create({
-        data: {
-          ...data,
-          status: 'Active',
-        },
-      }),
-      prisma.vehicle.update({
-        where: { id: data.vehicleId },
-        data: { status: 'InShop' },
-      })
-    ])
+    const logRef = db.collection('maintenanceLogs').doc();
+
+    const batch = db.batch();
+    batch.set(logRef, {
+      ...data,
+      status: 'Active',
+    });
+    batch.update(vehicleRef, { status: 'InShop' });
+    
+    await batch.commit();
 
     revalidatePath('/maintenance')
     revalidatePath('/vehicles')
@@ -40,20 +42,23 @@ export async function createMaintenanceLog(data: {
 
 export async function completeMaintenanceLog(logId: string) {
   try {
-    const log = await prisma.maintenanceLog.findUnique({ where: { id: logId } })
-    if (!log) return { success: false, error: 'Log not found' }
+    if (!db) throw new Error('Database not initialized');
+    
+    const logRef = db.collection('maintenanceLogs').doc(logId);
+    const logDoc = await logRef.get();
+    
+    if (!logDoc.exists) return { success: false, error: 'Log not found' }
 
-    await prisma.$transaction([
-      prisma.maintenanceLog.update({
-        where: { id: logId },
-        data: { status: 'Completed' },
-      }),
-      // Assuming it goes back to available
-      prisma.vehicle.update({
-        where: { id: log.vehicleId },
-        data: { status: 'Available' },
-      })
-    ])
+    const vehicleId = logDoc.data()?.vehicleId;
+    if (!vehicleId) return { success: false, error: 'Vehicle reference missing' }
+    
+    const vehicleRef = db.collection('vehicles').doc(vehicleId);
+
+    const batch = db.batch();
+    batch.update(logRef, { status: 'Completed' });
+    batch.update(vehicleRef, { status: 'Available' });
+    
+    await batch.commit();
 
     revalidatePath('/maintenance')
     revalidatePath('/vehicles')

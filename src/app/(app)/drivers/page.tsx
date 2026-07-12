@@ -1,10 +1,19 @@
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/firebase';
 import { DriverManager } from '@/components/DriverManager';
 
 export default async function DriversPage() {
-  const initialDrivers = await prisma.driver.findMany({
-    orderBy: { name: 'asc' }
-  });
+  if (!db) {
+    return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
+  }
+
+  const driversSnapshot = await db.collection('drivers')
+    .orderBy('name', 'asc')
+    .get();
+
+  const initialDrivers = driversSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data()
+  })) as any;
 
   return (
     <div className="flex flex-col h-full gap-6">

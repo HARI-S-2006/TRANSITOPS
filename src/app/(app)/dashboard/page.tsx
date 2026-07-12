@@ -2,7 +2,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { MetricCard } from '@/components/ui/MetricCard';
-import { prisma } from '@/lib/db';
+import { db } from '@/lib/firebase';
 import Link from 'next/link';
 
 function getTripBadgeStatus(status: string) {
@@ -21,16 +21,29 @@ function getTripBadgeStatus(status: string) {
 }
 
 export default async function DashboardPage() {
-  const activeVehicles = await prisma.vehicle.count({ where: { status: 'OnTrip' } });
-  const availableVehicles = await prisma.vehicle.count({ where: { status: 'Available' } });
-  const inShopVehicles = await prisma.vehicle.count({ where: { status: 'InShop' } });
-  const retiredVehicles = await prisma.vehicle.count({ where: { status: 'Retired' } });
-  const totalVehicles = await prisma.vehicle.count();
+  if (!db) {
+    return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
+  }
 
-  const activeTrips = await prisma.trip.count({ where: { status: 'Dispatched' } });
-  const pendingTrips = await prisma.trip.count({ where: { status: 'Draft' } });
+  const getCount = async (collection: string, field?: string, value?: string) => {
+    let query: any = db.collection(collection);
+    if (field && value) {
+      query = query.where(field, '==', value);
+    }
+    const snapshot = await query.count().get();
+    return snapshot.data().count;
+  };
+
+  const activeVehicles = await getCount('vehicles', 'status', 'OnTrip');
+  const availableVehicles = await getCount('vehicles', 'status', 'Available');
+  const inShopVehicles = await getCount('vehicles', 'status', 'InShop');
+  const retiredVehicles = await getCount('vehicles', 'status', 'Retired');
+  const totalVehicles = await getCount('vehicles');
+
+  const activeTrips = await getCount('trips', 'status', 'Dispatched');
+  const pendingTrips = await getCount('trips', 'status', 'Draft');
   
-  const driversOnDuty = await prisma.driver.count({ where: { status: 'OnTrip' } });
+  const driversOnDuty = await getCount('drivers', 'status', 'OnTrip');
 
   const activePercentage = totalVehicles > 0 ? Math.round((activeVehicles / totalVehicles) * 100) : 0;
   const availablePercentage = totalVehicles > 0 ? Math.round((availableVehicles / totalVehicles) * 100) : 0;
@@ -39,11 +52,32 @@ export default async function DashboardPage() {
 
   const fleetUtilization = activePercentage;
 
-  const recentTrips = await prisma.trip.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    include: { vehicle: true, driver: true }
-  });
+  const recentTripsSnapshot = await db.collection('trips')
+    .orderBy('createdAt', 'desc')
+    .limit(5)
+    .get();
+
+  const recentTrips = await Promise.all(recentTripsSnapshot.docs.map(async (doc) => {
+    const data = doc.data();
+    let vehicle = null;
+    let driver = null;
+    
+    if (data.vehicleId) {
+      const vDoc = await db.collection('vehicles').doc(data.vehicleId).get();
+      vehicle = vDoc.exists ? { id: vDoc.id, ...vDoc.data() } : null;
+    }
+    if (data.driverId) {
+      const dDoc = await db.collection('drivers').doc(data.driverId).get();
+      driver = dDoc.exists ? { id: dDoc.id, ...dDoc.data() } : null;
+    }
+
+    return {
+      id: doc.id,
+      ...data,
+      vehicle,
+      driver
+    } as any;
+  }));
 
   return (
     <>

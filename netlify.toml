@@ -1,9 +1,6 @@
 [build]
-  command = "npx prisma generate && npx ts-node prisma/seed.ts && npm run build"
+  command = "npm run build"
   publish = ".next"
-
-[functions]
-  included_files = ["prisma/**"]
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

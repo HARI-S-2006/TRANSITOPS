@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/db'
+import { db } from '@/lib/firebase'
 import { createSession } from '@/lib/auth'
 
 export async function POST(request: Request) {
@@ -11,13 +11,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email }
-    })
+    if (!db) {
+      return NextResponse.json({ error: 'Database not initialized' }, { status: 500 })
+    }
 
-    if (!user) {
+    const usersRef = db.collection('users')
+    const snapshot = await usersRef.where('email', '==', email).limit(1).get()
+
+    if (snapshot.empty) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
+
+    const userDoc = snapshot.docs[0]
+    const user = { id: userDoc.id, ...userDoc.data() } as any
 
     const passwordMatch = await bcrypt.compare(password, user.password)
 

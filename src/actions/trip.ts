@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from '@/lib/db'
+import { db, FieldValue } from '@/lib/firebase'
 import { revalidatePath } from 'next/cache'
 
 export async function createTrip(data: {
@@ -13,13 +13,18 @@ export async function createTrip(data: {
   driverId: string
 }) {
   try {
+    if (!db) throw new Error('Database not initialized');
+    
     // Business Rule Validation
-    const vehicle = await prisma.vehicle.findUnique({ where: { id: data.vehicleId } })
-    const driver = await prisma.driver.findUnique({ where: { id: data.driverId } })
+    const vehicleDoc = await db.collection('vehicles').doc(data.vehicleId).get()
+    const driverDoc = await db.collection('drivers').doc(data.driverId).get()
 
-    if (!vehicle || !driver) {
+    if (!vehicleDoc.exists || !driverDoc.exists) {
       return { success: false, error: 'Vehicle or Driver not found' }
     }
+    
+    const vehicle = vehicleDoc.data() as any
+    const driver = driverDoc.data() as any
 
     if (vehicle.status !== 'Available') {
       return { success: false, error: 'Selected vehicle is not available' }
@@ -33,16 +38,14 @@ export async function createTrip(data: {
       return { success: false, error: `Cargo weight exceeds vehicle capacity (${vehicle.capacity}kg)` }
     }
 
-    const trip = await prisma.trip.create({
-      data: {
-        ...data,
-        status: 'Draft',
-        etaMinutes: Math.round((data.distance / 60) * 60) // Rough ETA estimate assuming 60km/h
-      },
+    const tripRef = await db.collection('trips').add({
+      ...data,
+      status: 'Draft',
+      etaMinutes: Math.round((data.distance / 60) * 60)
     })
     
     revalidatePath('/dispatcher')
-    return { success: true, trip }
+    return { success: true, trip: { id: tripRef.id } }
   } catch (error) {
     console.error('Error creating trip:', error)
     return { success: false, error: 'Failed to create trip' }
@@ -51,15 +54,22 @@ export async function createTrip(data: {
 
 export async function dispatchTrip(tripId: string) {
   try {
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } })
-    if (!trip) return { success: false, error: 'Trip not found' }
+    if (!db) throw new Error('Database not initialized');
+    
+    const tripRef = db.collection('trips').doc(tripId)
+    const tripDoc = await tripRef.get()
+    
+    if (!tripDoc.exists) return { success: false, error: 'Trip not found' }
+    const trip = tripDoc.data() as any
 
-    // Transaction to update Trip, Vehicle, and Driver simultaneously
-    await prisma.$transaction([
-      prisma.trip.update({ where: { id: tripId }, data: { status: 'Dispatched' } }),
-      prisma.vehicle.update({ where: { id: trip.vehicleId }, data: { status: 'OnTrip' } }),
-      prisma.driver.update({ where: { id: trip.driverId }, data: { status: 'OnTrip' } }),
-    ])
+    const vehicleRef = db.collection('vehicles').doc(trip.vehicleId)
+    const driverRef = db.collection('drivers').doc(trip.driverId)
+
+    const batch = db.batch()
+    batch.update(tripRef, { status: 'Dispatched' })
+    batch.update(vehicleRef, { status: 'OnTrip' })
+    batch.update(driverRef, { status: 'OnTrip' })
+    await batch.commit()
 
     revalidatePath('/dispatcher')
     revalidatePath('/vehicles')
@@ -74,20 +84,25 @@ export async function dispatchTrip(tripId: string) {
 
 export async function completeTrip(tripId: string) {
   try {
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } })
-    if (!trip) return { success: false, error: 'Trip not found' }
+    if (!db) throw new Error('Database not initialized');
+    
+    const tripRef = db.collection('trips').doc(tripId)
+    const tripDoc = await tripRef.get()
+    
+    if (!tripDoc.exists) return { success: false, error: 'Trip not found' }
+    const trip = tripDoc.data() as any
 
-    await prisma.$transaction([
-      prisma.trip.update({ where: { id: tripId }, data: { status: 'Completed' } }),
-      prisma.vehicle.update({ 
-        where: { id: trip.vehicleId }, 
-        data: { 
-          status: 'Available',
-          odometer: { increment: trip.distance } // Update odometer!
-        } 
-      }),
-      prisma.driver.update({ where: { id: trip.driverId }, data: { status: 'Available' } }),
-    ])
+    const vehicleRef = db.collection('vehicles').doc(trip.vehicleId)
+    const driverRef = db.collection('drivers').doc(trip.driverId)
+
+    const batch = db.batch()
+    batch.update(tripRef, { status: 'Completed' })
+    batch.update(vehicleRef, { 
+      status: 'Available',
+      odometer: FieldValue.increment(trip.distance)
+    })
+    batch.update(driverRef, { status: 'Available' })
+    await batch.commit()
 
     revalidatePath('/dispatcher')
     revalidatePath('/vehicles')
