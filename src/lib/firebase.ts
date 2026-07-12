@@ -1,18 +1,21 @@
-import * as admin from 'firebase-admin';
+import { initializeApp, cert, getApps, getApp } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  // Handle newline characters in the private key
+  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+};
+
+let app;
 
 // Avoid multiple initializations in development
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
-    const serviceAccount = {
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // Handle newline characters in the private key
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    };
-
     if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+      app = initializeApp({
+        credential: cert(serviceAccount),
       });
       console.log('Firebase Admin initialized successfully.');
     } else {
@@ -21,7 +24,9 @@ if (!admin.apps.length) {
   } catch (error) {
     console.error('Firebase Admin initialization error', error);
   }
+} else {
+  app = getApp();
 }
 
-export const db = admin.apps.length ? admin.firestore() : null;
-export const FieldValue = admin.firestore.FieldValue;
+export const db = getApps().length ? getFirestore(app) : null;
+export { FieldValue };
