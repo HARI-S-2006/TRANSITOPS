@@ -5,7 +5,11 @@ import { createSession } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json()
+    const body = await request.json()
+    const email = body.email?.trim()
+    const password = body.password
+
+    console.log('LOGIN ATTEMPT:', { email, passwordLength: password?.length })
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
@@ -19,6 +23,7 @@ export async function POST(request: Request) {
     const snapshot = await usersRef.where('email', '==', email).limit(1).get()
 
     if (snapshot.empty) {
+      console.log('LOGIN FAILED: User not found for email', email)
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
