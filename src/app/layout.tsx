@@ -1,26 +1,14 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import "@/components/ui.css";
 
-const hanken = Hanken_Grotesk({
-  variable: "--font-hanken",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
+const hanken = Hanken_Grotesk({ subsets: ["latin"], variable: '--font-hanken' });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: "TransitOps Fleet Command Center",
-  description: "High-uptime smart transport logistics dashboard.",
+  title: "TransitOps Command Center",
+  description: "Fleet Management Dashboard",
 };
 
 export default function RootLayout({
@@ -29,11 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${hanken.variable} ${inter.variable} ${jetbrains.variable}`}
-    >
-      <body>{children}</body>
+    <html lang="en" className="dark">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet" />
+      </head>
+      <body
+        className={`${inter.variable} ${hanken.variable} ${jetbrains.variable} antialiased min-h-screen`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

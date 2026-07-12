@@ -115,13 +115,13 @@ The visual style is a blend of **Minimalism** and **Modern Corporate**, utilizin
 
 This design system utilizes a high-contrast dark palette designed for clarity in data-dense dashboards.
 
-- **Background & Surface:** The core UI uses `#0c1322` as the foundational layer. Cards and sidebars use `#191f2f` to create a subtle separation from the background without relying on heavy shadows.
+- **Background & Surface:** The core UI uses `#0F172A` as the foundational layer. Cards and sidebars use `#1F2937` to create a subtle separation from the background without relying on heavy shadows.
 - **Accents & Status:** 
     - **Primary (#3B82F6):** Used for primary actions, active navigation states, and "On Trip" vehicle status.
     - **Success (#10B981):** Represents "Available" or "Completed" states.
     - **Warning (#F59E0B):** Signals "In Shop" or "Suspended" states requiring attention but not immediate action.
     - **Danger (#EF4444):** Reserved for "Retired," "Cancelled," or critical system errors.
-- **Borders:** Low-opacity white or mid-gray borders (`#2e3545`) are used to define component boundaries in the absence of light-based elevation.
+- **Borders:** Low-opacity white or mid-gray borders (`#374151`) are used to define component boundaries in the absence of light-based elevation.
 
 ## Typography
 
@@ -146,10 +146,10 @@ The system follows a **Fluid Grid** model within a maximum container width of 14
 
 In this dark-mode environment, depth is conveyed through **Tonal Layers** rather than traditional shadows.
 
-- **Level 0 (Background):** `#0c1322` — The base canvas.
-- **Level 1 (Cards/Sidebars):** `#191f2f` — Slightly raised containers.
-- **Level 2 (Modals/Popovers):** `#232a3a` — The highest tier of surface.
-- **Outlines:** All Level 1 and Level 2 surfaces must have a 1px solid border (`#2e3545`) to ensure visibility against the background. 
+- **Level 0 (Background):** `#0F172A` — The base canvas.
+- **Level 1 (Cards/Sidebars):** `#1F2937` — Slightly raised containers.
+- **Level 2 (Modals/Popovers):** `#374151` — The highest tier of surface.
+- **Outlines:** All Level 1 and Level 2 surfaces must have a 1px solid border (`#374151`) to ensure visibility against the background. 
 - **Active State Glow:** Primary buttons and "On Trip" badges may use a subtle, 4px blur outer glow in their respective accent color (opacity 20%) to indicate "active" or "live" status.
 
 ## Shapes
@@ -164,7 +164,7 @@ The design system uses a **Soft** shape language.
 
 - **Buttons:** Primary buttons use a solid `#3B82F6` background with white text. Secondary buttons use a ghost style (border only) or a subtle gray surface. All buttons feature a 4px corner radius.
 - **Status Badges:** These are critical. They should feature a background opacity of 20% of their status color, with a solid 1px border and 100% opacity text of the same color (e.g., Emerald text on a 20% Emerald background).
-- **Input Fields:** Dark background (`#070e1d`), 1px border (`#2e3545`), and Inter (Body-md) text. On focus, the border transitions to the primary Blue.
-- **Data Tables:** Zebra striping is avoided. Instead, use thin horizontal dividers (`#191f2f`). Headers should use `label-sm` (JetBrains Mono) for a technical appearance.
+- **Input Fields:** Dark background (`#111827`), 1px border (`#374151`), and Inter (Body-md) text. On focus, the border transitions to the primary Blue.
+- **Data Tables:** Zebra striping is avoided. Instead, use thin horizontal dividers (`#1F2937`). Headers should use `label-sm` (JetBrains Mono) for a technical appearance.
 - **Cards:** Low-profile elevation with 1px borders. Use "Indicator Strips" (a 4px vertical color bar on the left edge) to show the health or status of the item inside the card.
 - **Progress Bars:** Thin (4px - 6px) tracks with high-contrast fills to show fleet utilization or trip completion percentages.
