@@ -100,7 +100,7 @@ export default function Page() {
               </p>
             </div>
 
-            <form onSubmit={handleAuth} className="space-y-6">
+            <form onSubmit={handleAuth} className="space-y-6" autoComplete="off">
               {error && (
                 <div className="p-3 bg-error/10 border border-error/50 rounded-lg text-error text-sm font-medium">
                   {error}
@@ -140,6 +140,7 @@ export default function Page() {
                     name="email" 
                     required 
                     type="email" 
+                    autoComplete="off"
                     placeholder="you@transitops.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -159,6 +160,7 @@ export default function Page() {
                     name="password" 
                     required 
                     type="password" 
+                    autoComplete="new-password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
