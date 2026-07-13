@@ -4,12 +4,29 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function Header() {
+type UserProps = {
+  name: string;
+  email: string;
+  role: string;
+};
+
+export default function Header({ user }: { user?: UserProps }) {
   const [roleOpen, setRoleOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const router = useRouter();
+
+  const nameParts = (user?.name || 'User').split(' ');
+  const initials = `${nameParts[0].charAt(0)}${nameParts.length > 1 ? nameParts[1].charAt(0) : ''}`;
+
+  const roleIconMap: Record<string, string> = {
+    'Fleet Manager': 'local_shipping',
+    'Dispatcher': 'headphones',
+    'Safety Officer': 'health_and_safety',
+    'Financial Analyst': 'monitoring'
+  };
+  const roleIcon = roleIconMap[user?.role || 'Dispatcher'] || 'person';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,8 +73,8 @@ export default function Header() {
           <button 
             onClick={() => { setRoleOpen(!roleOpen); setNotifOpen(false); setProfileOpen(false); }}
             className="font-label-md text-label-md text-on-surface-variant hover:text-[#6366f1] transition-colors duration-200 border border-white/10 rounded-lg px-4 py-2 flex items-center gap-2 bg-surface-container/30">
-            <span className="material-symbols-outlined text-[18px]">headphones</span>
-            Dispatcher
+            <span className="material-symbols-outlined text-[18px]">{roleIcon}</span>
+            {user?.role || 'Dispatcher'}
           </button>
           {roleOpen && (
             <div className="absolute top-full mt-2 right-0 w-48 bg-[#0e1628] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
@@ -128,8 +145,8 @@ export default function Header() {
         <div className="relative">
           <button 
             onClick={toggleProfile}
-            className="h-10 w-10 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1]">
-            <img alt="Raven K." className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMIhBULmfRD7lAOgR9veVP-aGv1DziQTIb7Ox--jnzN5lPgVbZEs4jx-3uUaxM6FF9wXJzDvC0RWp_AtKwh4sYvMc8jpdx-_Aez9bXAHJluBwR28pEPX4T_BS6M4QVzHdSY4hMJwuMxIMB-AqwMINi_AwIdNzhF7TCJNwaHg68xAd7y6aoxub8r91XY20HezubqOaEeJLYIEUKiP0ruLid1O-xPtVGb8cDPaH8wbA_M1RN3nhJpvd_24OLp9_GtoApL8UQzt-XU6o" />
+            className="h-10 w-10 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1]">
+            <span className="text-[15px] text-[#6366f1] font-bold">{initials}</span>
           </button>
           {profileOpen && (
             <div className="absolute top-full mt-2 right-0 w-64 bg-[#0e1628] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
@@ -175,10 +192,10 @@ export default function Header() {
                 <>
                   <div className="p-4 border-b border-white/10">
                     <div className="flex justify-between items-start mb-1">
-                      <p className="font-headline-sm text-on-surface">Raven K.</p>
+                      <p className="font-headline-sm text-on-surface">{user?.name || 'User'}</p>
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-primary/20 text-primary uppercase">Online</span>
                     </div>
-                    <p className="text-sm text-on-surface-variant mb-3">raven.k@transitops.in</p>
+                    <p className="text-sm text-on-surface-variant mb-3">{user?.email || 'email@example.com'}</p>
                     
                     <div className="bg-surface-container-high/50 rounded-lg p-2.5 border border-white/5">
                       <div className="flex justify-between items-center mb-1">
