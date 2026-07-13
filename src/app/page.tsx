@@ -12,6 +12,7 @@ export default function Page() {
   const [role, setRole] = useState('Dispatcher');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
 
 
@@ -159,12 +160,24 @@ export default function Page() {
                     id="password" 
                     name="password" 
                     required 
-                    type="password" 
+                    type={showPassword ? "text" : "password"} 
                     autoComplete="new-password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                </div>
+                <div className="flex items-center mt-3 ml-1">
+                  <input 
+                    id="show-password" 
+                    type="checkbox" 
+                    className="h-4 w-4 rounded border-outline-variant bg-surface-container text-inverse-primary focus:ring-inverse-primary focus:ring-offset-2 transition-colors cursor-pointer"
+                    checked={showPassword}
+                    onChange={() => setShowPassword(!showPassword)}
+                  />
+                  <label htmlFor="show-password" className="ml-2.5 block font-body-md text-sm text-on-surface-variant cursor-pointer">
+                    Show password
+                  </label>
                 </div>
               </div>
 
