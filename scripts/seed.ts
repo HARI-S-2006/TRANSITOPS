@@ -87,12 +87,12 @@ async function seed() {
   }
 
   const trips = [
-    { tripNumber: 'TR001', source: 'Warehouse A', destination: 'City Center', cargoWeight: 1000, distance: 45, vehicleId: vIds[1], driverId: dIds[1], status: 'Draft', etaMinutes: 45, createdAt: FieldValue.serverTimestamp() },
-    { tripNumber: 'TR002', source: 'Port Authority', destination: 'Distribution Hub', cargoWeight: 12000, distance: 120, vehicleId: vIds[2], driverId: dIds[2], status: 'Dispatched', etaMinutes: 180, createdAt: FieldValue.serverTimestamp() },
-    { tripNumber: 'TR003', source: 'Supplier Depot', destination: 'Warehouse A', cargoWeight: 2000, distance: 30, vehicleId: vIds[0], driverId: dIds[0], status: 'Completed', etaMinutes: 240, createdAt: FieldValue.serverTimestamp() },
-    { tripNumber: 'TR004', source: 'City Center', destination: 'Suburbs', cargoWeight: 500, distance: 15, vehicleId: vIds[3], driverId: dIds[3], status: 'Cancelled', etaMinutes: 190, createdAt: FieldValue.serverTimestamp() },
-    { tripNumber: 'TR005', source: 'North Site', destination: 'South Site', cargoWeight: 1500, distance: 80, vehicleId: vIds[4], driverId: dIds[4], status: 'Draft', etaMinutes: 50, createdAt: FieldValue.serverTimestamp() },
-    { tripNumber: 'TR006', source: 'East Depot', destination: 'West Hub', cargoWeight: 3000, distance: 200, vehicleId: vIds[5], driverId: dIds[5], status: 'Dispatched', etaMinutes: 120, createdAt: FieldValue.serverTimestamp() },
+    { tripNumber: 'TR001', source: 'Warehouse A', destination: 'City Center', cargoWeight: 1000, distance: 45, vehicleId: vIds[1], driverId: dIds[1], status: 'Draft', etaMinutes: 45, createdAt: new Date('2026-07-13T10:02:00Z') },
+    { tripNumber: 'TR002', source: 'Port Authority', destination: 'Distribution Hub', cargoWeight: 12000, distance: 120, vehicleId: vIds[2], driverId: dIds[2], status: 'Dispatched', etaMinutes: 180, createdAt: new Date('2026-07-13T10:03:00Z') },
+    { tripNumber: 'TR003', source: 'Supplier Depot', destination: 'Warehouse A', cargoWeight: 2000, distance: 30, vehicleId: vIds[0], driverId: dIds[0], status: 'Completed', etaMinutes: 240, createdAt: new Date('2026-07-13T10:01:00Z') },
+    { tripNumber: 'TR004', source: 'City Center', destination: 'Suburbs', cargoWeight: 500, distance: 15, vehicleId: vIds[3], driverId: dIds[3], status: 'Cancelled', etaMinutes: 190, createdAt: new Date('2026-07-13T10:04:00Z') },
+    { tripNumber: 'TR005', source: 'North Site', destination: 'South Site', cargoWeight: 1500, distance: 80, vehicleId: vIds[4], driverId: dIds[4], status: 'Draft', etaMinutes: 50, createdAt: new Date('2026-07-13T10:05:00Z') },
+    { tripNumber: 'TR006', source: 'East Depot', destination: 'West Hub', cargoWeight: 3000, distance: 200, vehicleId: vIds[5], driverId: dIds[5], status: 'Dispatched', etaMinutes: 120, createdAt: new Date('2026-07-13T10:00:00Z') },
   ];
 
   for (const t of trips) {

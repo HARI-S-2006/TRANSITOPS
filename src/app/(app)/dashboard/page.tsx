@@ -5,6 +5,8 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 function getTripBadgeStatus(status: string) {
   switch (status) {
     case 'Dispatched':
