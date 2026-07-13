@@ -39,8 +39,8 @@ export function DriverManager({ initialDrivers }: { initialDrivers: any[] }) {
 
   const handleUpdateStatus = async (id: string, status: string) => {
     const res = await updateDriverStatus(id, status)
-    if (res.success && res.driver) {
-      setDrivers(drivers.map(d => d.id === id ? res.driver : d))
+    if (res.success) {
+      setDrivers(drivers.map(d => d.id === id ? { ...d, status } : d))
     }
   }
 

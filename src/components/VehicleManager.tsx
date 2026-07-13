@@ -47,8 +47,8 @@ export function VehicleManager({ initialVehicles }: { initialVehicles: any[] }) 
 
   const handleUpdateStatus = async (id: string, status: string) => {
     const res = await updateVehicleStatus(id, status)
-    if (res.success && res.vehicle) {
-      setVehicles(vehicles.map(v => v.id === id ? res.vehicle : v))
+    if (res.success) {
+      setVehicles(vehicles.map(v => v.id === id ? { ...v, status } : v))
     }
   }
 
