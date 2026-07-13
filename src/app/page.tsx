@@ -13,17 +13,7 @@ export default function Page() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // For the demo, changing the role fills in a demo user's email
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const r = e.target.value;
-    if (r === 'Dispatcher') {
-      setEmail('sharinath2006@gmail.com');
-      setPassword('123456');
-    } else if (r === 'Fleet Manager') {
-      setEmail('admin@transitops.com');
-      setPassword('admin123');
-    }
-  };
+
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,32 +166,6 @@ export default function Page() {
                 </div>
               </div>
 
-              {!isSignUp && (
-                <div>
-                  <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="demo-role">Quick Demo Login (Select Role)</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                      <span className="material-symbols-outlined text-[20px]">badge</span>
-                    </div>
-                    <select 
-                      className="block w-full pl-11 pr-11 py-3.5 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-inverse-primary focus:border-inverse-primary text-on-surface font-body-lg text-body-lg appearance-none transition-all shadow-sm cursor-pointer hover:border-outline" 
-                      id="demo-role" 
-                      name="demo-role" 
-                      defaultValue=""
-                      onChange={handleRoleChange}
-                    >
-                      <option value="" disabled>Select to auto-fill credentials...</option>
-                      <option value="Dispatcher">Dispatcher</option>
-                      <option value="Fleet Manager">Fleet Manager</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-outline">
-                      <span className="material-symbols-outlined text-[20px]">expand_more</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {isSignUp && (
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="role">Select Role</label>
                   <div className="relative">
@@ -225,7 +189,6 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-              )}
 
               <div className="flex items-center justify-between pt-2">
                 {!isSignUp && (

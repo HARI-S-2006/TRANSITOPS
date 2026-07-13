@@ -82,7 +82,7 @@ export default async function DashboardPage() {
   return (
     <>
       <div className="mb-stack-lg mt-8">
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">1. Dashboard</h1>
+        <h1 className="font-headline-lg text-headline-lg text-on-surface">Dashboard</h1>
       </div>
 
       {/* Metrics Grid */}
