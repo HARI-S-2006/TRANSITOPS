@@ -1,6 +1,8 @@
 import { db } from '@/lib/firebase';
 import { DriverManager } from '@/components/DriverManager';
 
+import { serializeData } from '@/lib/serialize';
+
 export default async function DriversPage() {
   if (!db) {
     return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
@@ -10,7 +12,7 @@ export default async function DriversPage() {
     .orderBy('name', 'asc')
     .get();
 
-  const initialDrivers = driversSnapshot.docs.map((doc) => ({
+  const initialDrivers = driversSnapshot.docs.map((doc) => serializeData({
     id: doc.id,
     ...doc.data()
   })) as any;

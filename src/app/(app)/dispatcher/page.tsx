@@ -1,6 +1,8 @@
 import { db } from '@/lib/firebase';
 import { DispatcherManager } from '@/components/DispatcherManager';
 
+import { serializeData } from '@/lib/serialize';
+
 export default async function DispatcherPage() {
   if (!db) {
     return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
@@ -41,9 +43,9 @@ export default async function DispatcherPage() {
   return (
     <div className="flex flex-col gap-6 h-full">
       <DispatcherManager 
-        initialTrips={initialTrips} 
-        availableVehicles={availableVehicles}
-        availableDrivers={availableDrivers}
+        initialTrips={serializeData(initialTrips)} 
+        availableVehicles={serializeData(availableVehicles)}
+        availableDrivers={serializeData(availableDrivers)}
       />
     </div>
   );

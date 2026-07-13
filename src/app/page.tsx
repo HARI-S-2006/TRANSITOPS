@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation';
 
 export default function Page() {
   const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('Dispatcher');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -16,22 +19,25 @@ export default function Page() {
     if (r === 'Dispatcher') {
       setEmail('sharinath2006@gmail.com');
       setPassword('123456');
-    } else {
+    } else if (r === 'Fleet Manager') {
       setEmail('admin@transitops.com');
       setPassword('admin123');
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const endpoint = isSignUp ? '/api/auth/signup' : '/api/auth/login';
+      const body = isSignUp ? { name, email, password, role } : { email, password };
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
@@ -39,10 +45,10 @@ export default function Page() {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Authentication failed');
       }
     } catch (err) {
-      setError('An error occurred during login.');
+      setError('An error occurred during authentication.');
     } finally {
       setLoading(false);
     }
@@ -96,14 +102,39 @@ export default function Page() {
         <section className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-24 bg-[#0e1628]">
           <div className="w-full max-w-[440px]">
             <div className="mb-12 text-center lg:text-left">
-              <h2 className="font-headline-lg text-headline-lg mb-3 text-on-surface tracking-tight">Sign in to your account</h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">Enter your credentials to continue</p>
+              <h2 className="font-headline-lg text-headline-lg mb-3 text-on-surface tracking-tight">
+                {isSignUp ? 'Create your account' : 'Sign in to your account'}
+              </h2>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">
+                {isSignUp ? 'Enter your details to get started' : 'Enter your credentials to continue'}
+              </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleAuth} className="space-y-6">
               {error && (
                 <div className="p-3 bg-error/10 border border-error/50 rounded-lg text-error text-sm font-medium">
                   {error}
+                </div>
+              )}
+
+              {isSignUp && (
+                <div>
+                  <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="name">Full Name</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                      <span className="material-symbols-outlined text-[20px]">person</span>
+                    </div>
+                    <input 
+                      className="block w-full pl-11 pr-4 py-3.5 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-inverse-primary focus:border-inverse-primary text-on-surface font-body-lg text-body-lg transition-all placeholder:text-outline-variant shadow-sm" 
+                      id="name" 
+                      name="name" 
+                      required 
+                      type="text" 
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -145,43 +176,73 @@ export default function Page() {
                 </div>
               </div>
 
-              <div>
-                <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="role">Quick Demo Login (Select Role)</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
-                    <span className="material-symbols-outlined text-[20px]">badge</span>
-                  </div>
-                  <select 
-                    className="block w-full pl-11 pr-11 py-3.5 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-inverse-primary focus:border-inverse-primary text-on-surface font-body-lg text-body-lg appearance-none transition-all shadow-sm cursor-pointer hover:border-outline" 
-                    id="role" 
-                    name="role" 
-                    defaultValue=""
-                    onChange={handleRoleChange}
-                  >
-                    <option value="" disabled>Select to auto-fill credentials...</option>
-                    <option value="Dispatcher">Dispatcher</option>
-                    <option value="FleetManager">Fleet Manager</option>
-                    <option value="SafetyOfficer">Safety Officer</option>
-                    <option value="FinancialAnalyst">Financial Analyst</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-outline">
-                    <span className="material-symbols-outlined text-[20px]">expand_more</span>
+              {!isSignUp && (
+                <div>
+                  <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="demo-role">Quick Demo Login (Select Role)</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                      <span className="material-symbols-outlined text-[20px]">badge</span>
+                    </div>
+                    <select 
+                      className="block w-full pl-11 pr-11 py-3.5 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-inverse-primary focus:border-inverse-primary text-on-surface font-body-lg text-body-lg appearance-none transition-all shadow-sm cursor-pointer hover:border-outline" 
+                      id="demo-role" 
+                      name="demo-role" 
+                      defaultValue=""
+                      onChange={handleRoleChange}
+                    >
+                      <option value="" disabled>Select to auto-fill credentials...</option>
+                      <option value="Dispatcher">Dispatcher</option>
+                      <option value="Fleet Manager">Fleet Manager</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-outline">
+                      <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {isSignUp && (
+                <div>
+                  <label className="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider" htmlFor="role">Select Role</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+                      <span className="material-symbols-outlined text-[20px]">work</span>
+                    </div>
+                    <select 
+                      className="block w-full pl-11 pr-11 py-3.5 bg-surface-container border border-outline-variant rounded-lg focus:ring-2 focus:ring-inverse-primary focus:border-inverse-primary text-on-surface font-body-lg text-body-lg appearance-none transition-all shadow-sm cursor-pointer hover:border-outline" 
+                      id="role" 
+                      name="role" 
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                    >
+                      <option value="Dispatcher">Dispatcher</option>
+                      <option value="Fleet Manager">Fleet Manager</option>
+                      <option value="Safety Officer">Safety Officer</option>
+                      <option value="Financial Analyst">Financial Analyst</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-3.5 pointer-events-none text-outline">
+                      <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center">
-                  <input defaultChecked className="h-4 w-4 rounded border-outline-variant bg-surface-container text-inverse-primary focus:ring-inverse-primary focus:ring-offset-2 transition-colors cursor-pointer" id="remember-me" name="remember-me" type="checkbox" />
-                  <label className="ml-2.5 block font-body-md text-body-md text-on-surface-variant cursor-pointer" htmlFor="remember-me">
-                    Remember me
-                  </label>
-                </div>
-                <div className="text-sm">
-                  <a className="font-body-md text-body-md text-primary hover:text-primary-fixed transition-colors font-medium" href="#">
-                    Forgot password?
-                  </a>
-                </div>
+                {!isSignUp && (
+                  <>
+                    <div className="flex items-center">
+                      <input defaultChecked className="h-4 w-4 rounded border-outline-variant bg-surface-container text-inverse-primary focus:ring-inverse-primary focus:ring-offset-2 transition-colors cursor-pointer" id="remember-me" name="remember-me" type="checkbox" />
+                      <label className="ml-2.5 block font-body-md text-body-md text-on-surface-variant cursor-pointer" htmlFor="remember-me">
+                        Remember me
+                      </label>
+                    </div>
+                    <div className="text-sm">
+                      <a className="font-body-md text-body-md text-primary hover:text-primary-fixed transition-colors font-medium" href="#">
+                        Forgot password?
+                      </a>
+                    </div>
+                  </>
+                )}
               </div>
 
               <button 
@@ -189,8 +250,21 @@ export default function Page() {
                 className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg bg-inverse-primary text-white font-label-md text-label-md uppercase tracking-widest hover:bg-inverse-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-inverse-primary transition-all btn-primary shadow-lg disabled:opacity-50" 
                 type="submit"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? (isSignUp ? 'Creating Account...' : 'Signing in...') : (isSignUp ? 'Create Account' : 'Sign In')}
               </button>
+
+              <div className="text-center mt-4">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setError('');
+                  }} 
+                  className="font-body-md text-body-md text-primary hover:text-primary-fixed transition-colors font-medium"
+                >
+                  {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+                </button>
+              </div>
             </form>
 
             <div className="mt-10 pt-8 border-t border-outline-variant/30">

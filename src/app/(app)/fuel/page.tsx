@@ -1,6 +1,8 @@
 import { db } from '@/lib/firebase';
 import { FuelManager } from '@/components/FuelManager';
 
+import { serializeData } from '@/lib/serialize';
+
 export default async function FuelPage() {
   if (!db) {
     return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
@@ -43,8 +45,8 @@ export default async function FuelPage() {
   return (
     <div className="flex flex-col gap-8 h-full">
       <FuelManager 
-        initialFuelLogs={initialFuelLogs} 
-        vehicles={vehicles}
+        initialFuelLogs={serializeData(initialFuelLogs)} 
+        vehicles={serializeData(vehicles)}
         totalFuelCost={totalFuelCost}
         totalMaintenanceCost={totalMaintenanceCost}
       />

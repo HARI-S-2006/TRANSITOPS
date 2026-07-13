@@ -1,6 +1,8 @@
 import { db } from '@/lib/firebase';
 import { MaintenanceManager } from '@/components/MaintenanceManager';
 
+import { serializeData } from '@/lib/serialize';
+
 export default async function MaintenancePage() {
   if (!db) {
     return <div className="p-8 text-error">Database not initialized. Please configure Firebase.</div>
@@ -39,8 +41,8 @@ export default async function MaintenancePage() {
   return (
     <div className="flex flex-col gap-6 h-full">
       <MaintenanceManager 
-        initialLogs={initialLogs} 
-        availableVehicles={availableVehicles}
+        initialLogs={serializeData(initialLogs)} 
+        availableVehicles={serializeData(availableVehicles)}
       />
     </div>
   );

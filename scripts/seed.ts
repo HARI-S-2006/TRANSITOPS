@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import bcrypt from 'bcryptjs';
 
 // Load .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
@@ -20,6 +21,23 @@ const db = getFirestore();
 
 async function seed() {
   console.log('Seeding database...');
+
+  // Seed Users
+  const salt = await bcrypt.genSalt(10);
+  const pw1 = await bcrypt.hash('123456', salt);
+  const pw2 = await bcrypt.hash('admin123', salt);
+
+  const users = [
+    { name: 'Raven K.', email: 'sharinath2006@gmail.com', password: pw1, role: 'Dispatcher', createdAt: new Date().toISOString() },
+    { name: 'Admin', email: 'admin@transitops.com', password: pw2, role: 'Fleet Manager', createdAt: new Date().toISOString() }
+  ];
+
+  for (const user of users) {
+    const existing = await db.collection('users').where('email', '==', user.email).get();
+    if (existing.empty) {
+      await db.collection('users').add(user);
+    }
+  }
 
   const vehicles = [
     { regNo: 'TRK-101', name: 'Heavy Hauler 1', type: 'Truck', capacity: 15000, odometer: 125000, acqCost: 85000, status: 'Available', createdAt: FieldValue.serverTimestamp() },
