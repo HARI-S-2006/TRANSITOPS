@@ -182,7 +182,7 @@ export function DispatcherManager({
                 <div className="flex justify-between items-center pl-2">
                   <span className={`font-bold tracking-wide ${t.status === 'Dispatched' ? 'text-on-surface' : 'text-on-surface-variant'}`}>{t.tripNumber}</span>
                   <span className="text-[10px] font-bold text-on-surface-variant bg-white/5 px-3 py-1.5 rounded-md uppercase tracking-wider">
-                    {t.vehicle?.name || 'UNASSIGNED'} / {t.driver?.name?.toUpperCase() || 'UNASSIGNED'}
+                    {t.vehicle?.type || 'UNASSIGNED'} / {t.driver?.name?.toUpperCase() || 'UNASSIGNED'}
                   </span>
                 </div>
                 

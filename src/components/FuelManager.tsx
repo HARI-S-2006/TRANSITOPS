@@ -114,7 +114,7 @@ export function FuelManager({
                 ) : (
                   fuelLogs.map(log => (
                     <tr key={log.id} className="border-b border-white/5 hover:bg-[#171f33]/50 transition-colors group">
-                      <td className="py-5 px-8 text-on-surface font-bold group-hover:text-[#6366f1] transition-colors tracking-wide">{log.vehicle?.name}</td>
+                      <td className="py-5 px-8 text-on-surface font-bold group-hover:text-[#6366f1] transition-colors tracking-wide">{log.vehicle?.type}</td>
                       <td className="py-5 px-8 text-on-surface-variant">{new Date(log.date).toLocaleDateString()}</td>
                       <td className="py-5 px-8 text-on-surface-variant">{log.liters} L</td>
                       <td className="py-5 px-8 text-on-surface font-semibold">${log.cost.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>

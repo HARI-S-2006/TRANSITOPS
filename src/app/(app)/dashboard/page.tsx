@@ -140,7 +140,7 @@ export default async function DashboardPage() {
                     recentTrips.map((trip) => (
                       <tr key={trip.id} className="border-b border-white/5 hover:bg-surface-container-high/30 transition-colors">
                         <td className="py-4 px-3 font-label-md text-on-surface">{trip.tripNumber}</td>
-                        <td className="py-4 px-3">{trip.vehicle?.name || '--'}</td>
+                        <td className="py-4 px-3">{trip.vehicle?.type || '--'}</td>
                         <td className="py-4 px-3">{trip.driver?.name || '--'}</td>
                         <td className="py-4 px-3">
                           {getTripBadgeStatus(trip.status)}
