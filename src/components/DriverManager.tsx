@@ -27,7 +27,7 @@ export function DriverManager({ initialDrivers }: { initialDrivers: any[] }) {
       safetyScore: 100 // default new driver score
     })
     
-    if (res.success && res.driver) {
+    if ('driver' in res && res.driver) {
       setDrivers([...drivers, res.driver])
       setShowAddForm(false)
       setName(''); setLicenseNo(''); setLicenseExpiry(''); setContact('');

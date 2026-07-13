@@ -34,7 +34,7 @@ export function VehicleManager({ initialVehicles }: { initialVehicles: any[] }) 
       acqCost: Number(acqCost)
     })
     
-    if (res.success && res.vehicle) {
+    if ('vehicle' in res && res.vehicle) {
       setVehicles([...vehicles, res.vehicle])
       setShowAddForm(false)
       // Reset
