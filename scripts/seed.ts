@@ -19,8 +19,25 @@ if (!getApps().length) {
 
 const db = getFirestore();
 
+async function clearCollection(collectionName: string) {
+  const snapshot = await db.collection(collectionName).get();
+  const batch = db.batch();
+  snapshot.docs.forEach((doc) => {
+    batch.delete(doc.ref);
+  });
+  await batch.commit();
+}
+
 async function seed() {
   console.log('Seeding database...');
+
+  // Clear existing collections to prevent duplicates
+  await clearCollection('vehicles');
+  await clearCollection('drivers');
+  await clearCollection('trips');
+  await clearCollection('maintenanceLogs');
+  await clearCollection('fuelLogs');
+
 
   // Seed Users
   const salt = await bcrypt.genSalt(10);
