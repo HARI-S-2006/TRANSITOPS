@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [roleOpen, setRoleOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -20,6 +22,12 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
 
   const toggleProfile = () => {
     if (!profileOpen) {
@@ -127,19 +135,39 @@ export default function Header() {
             <div className="absolute top-full mt-2 right-0 w-64 bg-[#0e1628] border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
               {isProfileLoading ? (
                 // Skeleton Loader
-                <div className="p-4 animate-pulse">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-white/10"></div>
-                    <div className="space-y-2">
-                      <div className="h-4 w-24 bg-white/10 rounded"></div>
-                      <div className="h-3 w-32 bg-white/10 rounded"></div>
+                <div className="animate-pulse">
+                  <div className="p-4 border-b border-white/10">
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="h-6 w-20 bg-white/10 rounded"></div>
+                      <div className="h-5 w-12 bg-white/10 rounded"></div>
+                    </div>
+                    <div className="h-4 w-32 bg-white/10 rounded mb-3"></div>
+                    
+                    <div className="bg-surface-container-high/50 rounded-lg p-2.5 border border-white/5">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="h-3 w-16 bg-white/10 rounded"></div>
+                        <div className="h-3 w-20 bg-white/10 rounded"></div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="h-3 w-20 bg-white/10 rounded"></div>
+                        <div className="h-3 w-12 bg-white/10 rounded"></div>
+                      </div>
                     </div>
                   </div>
-                  <div className="h-px bg-white/10 my-3"></div>
-                  <div className="space-y-3">
-                    <div className="h-4 w-full bg-white/10 rounded"></div>
-                    <div className="h-4 w-full bg-white/10 rounded"></div>
-                    <div className="h-4 w-full bg-white/10 rounded"></div>
+                  <div className="flex flex-col py-2">
+                    <div className="px-4 py-2 flex items-center gap-2">
+                      <div className="w-[18px] h-[18px] bg-white/10 rounded"></div>
+                      <div className="h-4 w-16 bg-white/10 rounded"></div>
+                    </div>
+                    <div className="px-4 py-2 flex items-center gap-2">
+                      <div className="w-[18px] h-[18px] bg-white/10 rounded"></div>
+                      <div className="h-4 w-16 bg-white/10 rounded"></div>
+                    </div>
+                    <div className="h-px bg-white/10 my-2"></div>
+                    <div className="px-4 py-2 flex items-center gap-2">
+                      <div className="w-[18px] h-[18px] bg-error/20 rounded"></div>
+                      <div className="h-4 w-16 bg-error/20 rounded"></div>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -164,19 +192,21 @@ export default function Header() {
                     </div>
                   </div>
                   <div className="flex flex-col py-2">
-                    <button className="px-4 py-2 text-sm text-on-surface hover:bg-white/5 flex items-center gap-2 transition-colors">
+                    <Link href="/profile" className="px-4 py-2 text-sm text-on-surface hover:bg-white/5 flex items-center gap-2 transition-colors">
                       <span className="material-symbols-outlined text-[18px]">person</span>
                       My Profile
-                    </button>
-                    <button className="px-4 py-2 text-sm text-on-surface hover:bg-white/5 flex items-center gap-2 transition-colors">
+                    </Link>
+                    <Link href="/settings" className="px-4 py-2 text-sm text-on-surface hover:bg-white/5 flex items-center gap-2 transition-colors">
                       <span className="material-symbols-outlined text-[18px]">settings</span>
                       Settings
-                    </button>
+                    </Link>
                     <div className="h-px bg-white/10 my-2"></div>
-                    <Link href="/" className="px-4 py-2 text-sm text-error hover:bg-error/10 flex items-center gap-2 transition-colors">
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full px-4 py-2 text-sm text-error hover:bg-error/10 flex items-center gap-2 transition-colors text-left">
                       <span className="material-symbols-outlined text-[18px]">logout</span>
                       Sign out
-                    </Link>
+                    </button>
                   </div>
                 </>
               )}
